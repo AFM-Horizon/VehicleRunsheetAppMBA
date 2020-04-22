@@ -1,0 +1,48 @@
+﻿@using VehicleRunsheetMBAProj.Data.Repositories
+@using VehicleRunsheetMBAProj.Models
+
+@inject IUnitOfWork Unit
+
+@code {
+    Runsheet runsheet;
+    string highlight = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var allRunsheets = await Unit.Runsheets.GetAllWithChildren();
+        runsheet = allRunsheets.FirstOrDefault(x => x.InProgress);
+    }
+}
+
+@if (runsheet != null)
+{
+    @foreach (var trip in runsheet.Trips)
+    {
+        highlight = trip.InProgress ? "bg-success" : "";
+
+        <tr class="@highlight">
+            <td>
+                @trip.StartTime.ToShortTimeString()
+            </td>
+            <td>
+                @trip.EndTime.ToShortTimeString()
+            </td>
+            <td>
+                @trip.Customer
+            </td>
+            <td>
+                @foreach (var order in trip.Orders)
+                {
+                    <div>
+                        @order.OrderNumber, 
+                    </div>
+                }
+            </td>
+            <td>
+                @trip.ReceivedBy
+            </td>
+        </tr>
+    }
+}
+
+

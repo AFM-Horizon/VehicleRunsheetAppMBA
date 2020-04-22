@@ -1,0 +1,32 @@
+﻿@page "/viewrunsheets"
+@using VehicleRunsheetMBA.Data
+
+@inject ApplicationDbContext Context
+
+<h3>View Runsheets</h3>
+
+<div>
+    <table class="table table-responsive-md table-dark">
+        <thead>
+            <tr>
+                <th><span class="oi oi-sun text-warning"></span> Date</th>
+                <th><span class="oi oi-dial text-warning"></span> Start Odometer</th>
+                <th><span class="oi oi-dial text-warning"></span> End Odometer</th>
+                <th><span class="oi oi-person text-warning"></span> Driver</th>
+                <th><span class="oi oi-cart text-warning"></span> Vehicle Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var runsheet in Context.Runsheets)
+            {
+                <tr>
+                    <td>@runsheet.Date.ToShortDateString()</td>
+                    <td>@runsheet.StartOdometer</td>
+                    <td>@runsheet.EndOdometer</td>
+                    <td>@runsheet.Driver</td>
+                    <td>@runsheet.VehicleDetails</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

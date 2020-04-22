@@ -1,0 +1,166 @@
+﻿@page "/Trip"
+@page "/Trip/{runsheetId}"
+@using Microsoft.EntityFrameworkCore.ChangeTracking
+@using VehicleRunsheetMBA.Data
+@using VehicleRunsheetMBA.Models
+@using VehicleRunsheetMBAProj.Data.Repositories
+@using VehicleRunsheetMBAProj.Mappers
+@using VehicleRunsheetMBAProj.Models
+
+@inject NavigationManager NavigationManager
+@inject IUnitOfWork Unit
+
+<h3>Trip</h3>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-5">
+            @if (activeTrip == null)
+            {
+                <div>
+                    <div class="spinner"></div>
+                </div>
+            }
+            else
+            {
+                <EditForm Model="@tripFormModel" OnValidSubmit="HandleSuccess">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="my-4">
+                        <span class="oi oi-timer text-warning"></span> Start
+                        <strong><input type="time" class="form-control" @bind="@tripFormModel.StartTime" /></strong>
+                    </div>
+                    <div class="my-4">
+
+                        <span class="oi oi-timer text-warning"></span> End
+                        <a class="btn btn-sm btn-warning m-1" @onclick="HandleStopTime">Set End</a>
+                        <strong><input type="time" class="form-control" @bind="@tripFormModel.EndTime" /></strong>
+                    </div>
+                    <div class="my-4">
+                        <span class="oi oi-person text-warning"></span> Customer
+                        <InputText class="form-control" @bind-Value="@tripFormModel.Customer" />
+                    </div>
+                    <div class="my-4">
+                        <span class="oi oi-script text-warning"></span> Order#
+                        @code
+                    {
+                            public string CurrentOrder { get; set; }
+
+                            private void AddOrder()
+                            {
+                                tripFormModel.Orders.Add(new Order() { OrderNumber = CurrentOrder });
+                                CurrentOrder = "";
+
+                                //Context.SaveChanges();
+                            }
+                        }
+                        <button class="btn btn-sm btn-warning mb-1" @onclick="AddOrder">Add Order#</button>
+                        <input type="text" class="form-control" @bind="@CurrentOrder" />
+                    </div>
+                    <div class="my-4">
+                        <span class="oi oi-wrench text-warning"></span> Received By
+                        <InputText class="form-control" @bind-Value="@tripFormModel.ReceivedBy" />
+                    </div>
+                    <br />
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Update</button>
+                    <hr />
+
+                </EditForm>
+                <button class="btn btn-info btn-lg btn-block" @onclick="HandleFinalize">Finalize Trip</button>
+                <br />
+            }
+        </div>
+        <div class="col-md-7">
+            <h3><strong>Order Numbers</strong></h3>
+            <table class="table table-responsive-md table-dark">
+                <thead>
+                    <tr>
+                        <th><span class="oi oi-file text-warning"></span> Orders</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in tripFormModel.Orders)
+                    {
+                        <tr>
+                            <td>@order.OrderNumber</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string runsheetId { get; set; }
+
+    private int _id;
+    private List<Order> orders;
+    private Trip tripFormModel = new Trip();
+    private Trip activeTrip = null;
+    private Runsheet runsheet;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var result = int.TryParse(runsheetId, out _id);
+        runsheet = await Unit.Runsheets.GetByIdAsync(_id);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Unit.Trips.Find(x => x.InProgress);
+        activeTrip = result.FirstOrDefault();
+
+        if (activeTrip != null)
+        {
+            tripFormModel = TripMapper.MapTrip(activeTrip, tripFormModel);
+        }
+
+        if (activeTrip == null)
+        {
+            activeTrip = new Trip() { InProgress = true };
+            tripFormModel.StartTime = DateTime.Now;
+            tripFormModel.InProgress = true;
+        }
+    }
+
+
+    private async Task HandleSuccess()
+    {
+        activeTrip = TripMapper.MapTrip(tripFormModel, activeTrip);
+
+        runsheet = await Unit.Runsheets.GetByIdAsync(_id);
+
+        if (activeTrip.Id == 0)
+        {
+            runsheet.Trips.Add(activeTrip);
+            await Unit.Runsheets.UpdateAsync(runsheet);
+        }
+        else
+        {
+            await Unit.Trips.UpdateAsync(activeTrip);
+        }
+
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void HandleStartTime()
+    {
+        tripFormModel.StartTime = DateTime.Now;
+    }
+
+    private void HandleStopTime()
+    {
+        tripFormModel.EndTime = DateTime.Now;
+    }
+
+    private async Task HandleFinalize()
+    {
+        activeTrip.InProgress = false;
+        await Unit.Trips.UpdateAsync(activeTrip);
+        NavigationManager.NavigateTo("/");
+    }
+}

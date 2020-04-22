@@ -1,0 +1,147 @@
+﻿@page "/"
+@using System.Security.Cryptography.X509Certificates
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.EntityFrameworkCore.ChangeTracking
+@using VehicleRunsheetMBA.Data
+@using VehicleRunsheetMBA.Models
+@using VehicleRunsheetMBAProj.Models
+@using Components
+@using VehicleRunsheetMBAProj.Data.Repositories
+
+@inject IUnitOfWork Unit
+@inject NavigationManager NavigationManager
+
+<div class="container-fluid">
+
+
+    <div class="row">
+        <div class="col-md-5">
+            @if (active == null)
+            {
+                <div>
+                    <div class="spinner"></div>
+                </div>
+            }
+            else
+            {
+                <h3><strong>Run-Sheet</strong></h3>
+                <EditForm Model="@runsheetViewModel" OnValidSubmit="HandleSuccess">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="my-4">
+                        <span class="oi oi-dial text-warning"></span> Start Odometer
+                        <InputNumber class="form-control" @bind-Value="@runsheetViewModel.StartOdometer" />
+                    </div>
+                    <div class="my-4">
+                        <span class="oi oi-dial text-warning"></span> End Odometer
+                        <InputNumber class="form-control" @bind-Value="@runsheetViewModel.EndOdometer" />
+                    </div>
+                    <div class="my-4">
+                        <span class="oi oi-person text-warning"></span> Driver
+                        <InputText class="form-control" @bind-Value="@runsheetViewModel.Driver" />
+                    </div>
+                    <div class="my-4">
+                        <span class="oi oi-cart text-warning"></span> Vehicle Details
+                        <InputText class="form-control" @bind-Value="@runsheetViewModel.VehicleDetails" />
+                    </div>
+                    <br />
+                    @if (!isActiveTrip)
+                    {
+                        <button class="btn btn-primary btn-lg btn-block" type="submit">Create New Trip</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary btn-lg btn-block" type="submit">Edit Trip</button>
+                    }
+                </EditForm>
+                <hr />
+                <button class="btn btn-success btn-lg btn-block" @onclick="HandleFinalize">Finalize Runsheet</button>
+                <br />
+            }
+        </div>
+        <div class="col-md-7">
+            <h3><strong>Today's Trips</strong></h3>
+            <table class="table table-responsive-md table-dark">
+                <thead>
+                    <tr>
+                        <th><span class="oi oi-timer text-warning"></span> Start</th>
+                        <th><span class="oi oi-timer text-warning"></span> End</th>
+                        <th><span class="oi oi-person text-warning"></span> Customer</th>
+                        <th><span class="oi oi-script text-warning"></span> Order#</th>
+                        <th><span class="oi oi-wrench text-warning"></span> Received By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <VehicleRunsheetMBAProj.Components.TripTableHighlightComponent />
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private Runsheet runsheetViewModel = new Runsheet() { InProgress = true };
+    private Runsheet active = null;
+    private bool isActiveTrip;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allRunsheets = await Unit.Runsheets.GetAllWithChildren();
+        active = allRunsheets.FirstOrDefault(x => x.InProgress);
+
+        var result = await Unit.Trips.Find(x => x.InProgress);
+        if (result.FirstOrDefault() != null)
+        {
+            isActiveTrip = true;
+        }
+
+        if (active != null)
+        {
+            runsheetViewModel.Trips = active.Trips;
+            runsheetViewModel.InProgress = active.InProgress;
+            runsheetViewModel.Date = active.Date;
+            runsheetViewModel.Id = active.Id;
+            runsheetViewModel.Driver = active.Driver;
+            runsheetViewModel.StartOdometer = active.StartOdometer;
+            runsheetViewModel.EndOdometer = active.EndOdometer;
+            runsheetViewModel.VehicleDetails = active.VehicleDetails;
+        }
+
+        if (active == null)
+        {
+            active = new Runsheet() { InProgress = true };
+        }
+    }
+
+    private async Task HandleSuccess()
+    {
+        active.Trips = runsheetViewModel.Trips;
+        active.InProgress = runsheetViewModel.InProgress;
+        active.Date = runsheetViewModel.Date;
+        active.Driver = runsheetViewModel.Driver;
+        active.StartOdometer = runsheetViewModel.StartOdometer;
+        active.EndOdometer = runsheetViewModel.EndOdometer;
+        active.VehicleDetails = runsheetViewModel.VehicleDetails;
+
+        if (active.Id == 0)
+        {
+            await Unit.Runsheets.AddAsync(active);
+        }
+        else
+        {
+            await Unit.Runsheets.UpdateAsync(active);
+        }
+
+        NavigationManager.NavigateTo($"Trip/{active.Id}");
+    }
+
+    private async Task HandleFinalize()
+    {
+        active.Date = DateTime.Today;
+        active.InProgress = false;
+        await Unit.Runsheets.UpdateAsync(active);
+        runsheetViewModel = new Runsheet();
+    }
+}
