@@ -36,7 +36,7 @@ namespace VehicleRunsheetMBA
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer("Server=tcp:mbarunsheet.database.windows.net,1433;Initial Catalog=MBARunsheetDB;Persist Security Info=False;User ID=afmhorizon;Password=Pa55w0rd2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer("Server=tcp:mbarunsheet.database.windows.net,1433;Initial Catalog=MBARunsheetDB;Persist Security Info=False;User ID=afmhorizon;Password=Pa55w0rd2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"),ServiceLifetime.Transient);
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Transient);
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();

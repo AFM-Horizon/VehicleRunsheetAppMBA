@@ -4,10 +4,6 @@ const networkFetchEvent = 'fetch';
 const swInstallEvent = 'install';
 const swInstalledEvent = 'installed';
 const swActivateEvent = 'activate';
-
-//self.addEventListener(networkFetchEvent, event => {
-
-//    return fetch(event.request);
-//});
-
-
+self.addEventListener(networkFetchEvent, event => {
+    return fetch(event.request);
+});
