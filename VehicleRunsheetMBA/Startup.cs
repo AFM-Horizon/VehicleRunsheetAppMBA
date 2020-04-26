@@ -10,6 +10,7 @@ using VehicleRunsheetMBA.Areas.Identity;
 using VehicleRunsheetMBA.Data;
 using VehicleRunsheetMBAProj.Data;
 using VehicleRunsheetMBAProj.Data.Repositories;
+using VehicleRunsheetMBAProj.Utilities;
 
 namespace VehicleRunsheetMBA
 {
@@ -43,6 +44,8 @@ namespace VehicleRunsheetMBA
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 
+            services.AddTransient<CsvRunsheetWriter>();
+            services.AddTransient<PdfWriter>();
             services.AddTransient<ITripRepository, TripRepository>();
             services.AddTransient<IRunsheetRepository, RunsheetRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
