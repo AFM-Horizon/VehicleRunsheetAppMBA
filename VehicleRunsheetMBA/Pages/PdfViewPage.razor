@@ -1,0 +1,41 @@
+﻿@page "/pdfview"
+@page "/pdfview/{RunsheetId}"
+@using VehicleRunsheetMBAProj.Data.Repositories
+@using VehicleRunsheetMBAProj.Models
+
+@inject IUnitOfWork Unit
+
+@code {
+    [Parameter]
+    public string RunsheetId { get; set; }
+
+    public Runsheet Runsheet { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = int.TryParse(RunsheetId, out var id);
+        Runsheet = await Unit.Runsheets.GetByIdWithChildren(id);
+    }
+}
+
+@if (Runsheet != null)
+{
+    <div>
+        <p><strong>Start Odometer</strong></p>
+        <p>@Runsheet.StartOdometer</p>
+
+        <p><strong>End Odometer</strong></p>
+        <p>@Runsheet.EndOdometer</p>
+
+        <p><strong>Driver</strong></p>
+        <p>@Runsheet.Driver</p>
+
+        <p><strong>Vehicle Details</strong></p>
+        <p>@Runsheet.VehicleDetails</p>
+    </div>
+    <hr/>
+
+    <TripTableComponent Runsheet="@Runsheet" CssClass="table-bordered"></TripTableComponent>
+}
+
+

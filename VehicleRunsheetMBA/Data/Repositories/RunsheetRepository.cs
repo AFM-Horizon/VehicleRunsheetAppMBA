@@ -19,5 +19,10 @@ namespace VehicleRunsheetMBAProj.Data.Repositories
         {
             return await _context.Runsheets.Include(x => x.Trips).ThenInclude(x => x.Orders).ToListAsync();
         }
+
+        public async Task<Runsheet> GetByIdWithChildren(int id)
+        {
+            return await _context.Runsheets.Include(x => x.Trips).ThenInclude(x => x.Orders).Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
     }
 }
