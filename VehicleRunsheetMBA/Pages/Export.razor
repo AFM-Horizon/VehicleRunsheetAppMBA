@@ -9,6 +9,7 @@
 <h3>Export</h3>
 
 @inject IUnitOfWork Unit
+@inject NavigationManager NavMan
 
 @*<button type="button" class="btn btn-primary" @onclick="HandleClick">Search</button>*@
 <input type="date" @onchange="HandleClick" />
@@ -46,7 +47,8 @@
         }))
         {
             var page = await browser.NewPageAsync();
-            await page.GoToAsync($@"https://localhost:5001/pdfview/{Runsheet.Id}");
+            
+            await page.GoToAsync($@"{NavMan.BaseUri}/pdfview/{Runsheet.Id}");
             await page.PdfAsync("test.pdf");
         }
         //Need to get base root here
