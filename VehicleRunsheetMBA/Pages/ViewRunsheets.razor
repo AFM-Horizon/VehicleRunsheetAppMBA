@@ -1,4 +1,7 @@
 ﻿@page "/viewrunsheets"
+
+@attribute [Authorize(Roles = "Admin, Manager, User")]
+
 @using VehicleRunsheetMBA.Data
 
 @inject ApplicationDbContext Context

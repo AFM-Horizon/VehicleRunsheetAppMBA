@@ -1,5 +1,8 @@
 ﻿@page "/Trip"
 @page "/Trip/{runsheetId}"
+
+@attribute [Authorize(Roles = "Admin, Manager, User")]
+
 @using Microsoft.EntityFrameworkCore.ChangeTracking
 @using VehicleRunsheetMBA.Data
 @using VehicleRunsheetMBA.Models
@@ -107,12 +110,9 @@
     {
         var result = int.TryParse(runsheetId, out _id);
         runsheet = await Unit.Runsheets.GetByIdAsync(_id);
-    }
 
-    protected override async Task OnInitializedAsync()
-    {
-        var result = await Unit.Trips.Find(x => x.InProgress);
-        activeTrip = result.FirstOrDefault();
+        var trips = await Unit.Trips.Find(x => x.InProgress && x.RunsheetId == _id);
+        activeTrip = trips.FirstOrDefault();
 
         if (activeTrip != null)
         {
@@ -125,6 +125,11 @@
             tripFormModel.StartTime = DateTime.Now;
             tripFormModel.InProgress = true;
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
     }
 
 
@@ -161,6 +166,6 @@
     {
         activeTrip.InProgress = false;
         await Unit.Trips.UpdateAsync(activeTrip);
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/runsheet");
     }
 }

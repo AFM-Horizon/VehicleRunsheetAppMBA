@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices.ComTypes;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +24,7 @@ namespace VehicleRunsheetMBAProj
         {
             const string Admin = "Admin";
             const string Manager = "Manager";
-            const string AppUser = "AppGuyKing";
+            const string AppUser = "User";
 
             string[] _roleNames = { Admin, Manager, AppUser };
 
@@ -64,7 +65,9 @@ namespace VehicleRunsheetMBAProj
                         throw new Exception($"Email Could Not Be Confirmed for {createdUser.UserName}");
                     }
 
-                    await _userManager.AddToRoleAsync(admin, Admin);
+                    await _userManager.AddToRoleAsync(createdUser, Admin);
+                    await _userManager.AddClaimAsync(createdUser, new Claim("Id", admin.Id));
+                    await _userManager.AddClaimAsync(createdUser, new Claim("Role", Admin));
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿@page "/export"
+@attribute [Authorize(Roles = "Admin, Manager, User")]
 
 @using System.IO
 @using Microsoft.AspNetCore.Hosting
@@ -25,15 +26,22 @@
 <TripTableComponent Runsheet="@RunsheetEntity"></TripTableComponent>
 
 @code {
+    [CascadingParameter]
+    Task<AuthenticationState> AuthenticationStateTask { get; set; }
     public DateTime Date { get; set; }
     public Runsheet RunsheetEntity { get; set; }
     public string Email { get; set; }
 
     private async Task HandleClick(ChangeEventArgs e)
     {
+        var authState = await AuthenticationStateTask;
+        var user = authState.User;
+        var claims = user.Claims;
+        var userId = user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
+
         Date = DateTime.Parse(e.Value.ToString());
         var result = await Unit.Runsheets.GetAllWithChildren();
-        RunsheetEntity = result.FirstOrDefault(x => x.Date.Date == Date.Date);
+        RunsheetEntity = result.FirstOrDefault(x => x.UserId == userId && x.Date.Date == Date.Date);
     }
 
     private async Task HandleWrite()

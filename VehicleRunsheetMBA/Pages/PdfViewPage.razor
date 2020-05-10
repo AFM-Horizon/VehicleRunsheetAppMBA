@@ -1,6 +1,9 @@
 ﻿@layout PdfLayout
 @page "/pdfview"
 @page "/pdfview/{RunsheetId}"
+
+@attribute [Authorize(Roles = "Admin, Manager, User")]
+
 @using VehicleRunsheetMBAProj.Data.Repositories
 @using VehicleRunsheetMBAProj.Models
 
@@ -34,7 +37,7 @@
         <p><strong>Vehicle Details</strong></p>
         <p>@Runsheet.VehicleDetails</p>
     </div>
-    <hr/>
+    <hr />
 
     <TripTableComponent Runsheet="@Runsheet" CssClass="table-bordered"></TripTableComponent>
 }

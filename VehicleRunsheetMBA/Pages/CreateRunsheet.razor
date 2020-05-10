@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@page "/runsheet"
+@attribute [Authorize(Roles = "Admin, Manager, User")]
 @using System.Security.Cryptography.X509Certificates
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.EntityFrameworkCore.ChangeTracking
@@ -81,24 +82,26 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    Task<AuthenticationState> AuthenticationStateTask { get; set; }
     private Runsheet runsheetViewModel = new Runsheet() { InProgress = true };
     private Runsheet active = null;
     private bool isActiveTrip;
 
     protected override async Task OnInitializedAsync()
     {
-        var allRunsheets = await Unit.Runsheets.GetAllWithChildren();
-        active = allRunsheets.FirstOrDefault(x => x.InProgress);
+        var authState = await AuthenticationStateTask;
+        var user = authState.User;
+        var claims = user.Claims;
+        var userId = user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
 
-        var result = await Unit.Trips.Find(x => x.InProgress);
-        if (result.FirstOrDefault() != null)
-        {
-            isActiveTrip = true;
-        }
+        var allRunsheets = await Unit.Runsheets.GetAllWithChildren();
+        active = allRunsheets.FirstOrDefault(x => x.UserId == userId && x.InProgress);
 
         if (active != null)
         {
             runsheetViewModel.Trips = active.Trips;
+            runsheetViewModel.UserId = active.UserId;
             runsheetViewModel.InProgress = active.InProgress;
             runsheetViewModel.Date = active.Date;
             runsheetViewModel.Id = active.Id;
@@ -108,9 +111,15 @@
             runsheetViewModel.VehicleDetails = active.VehicleDetails;
         }
 
+        var result = active?.Trips.Find(x => x.InProgress);
+        if (result != null)
+        {
+            isActiveTrip = true;
+        }
+
         if (active == null)
         {
-            active = new Runsheet() { InProgress = true };
+            active = new Runsheet() { InProgress = true, UserId = userId };
         }
     }
 
