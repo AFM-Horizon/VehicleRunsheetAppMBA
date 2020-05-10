@@ -1,6 +1,6 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,12 +8,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using VehicleRunsheetMBA.Areas.Identity;
+using VehicleRunsheetMBA.Configuration;
 using VehicleRunsheetMBA.Data;
 using VehicleRunsheetMBAProj.Data;
 using VehicleRunsheetMBAProj.Data.Repositories;
-using VehicleRunsheetMBAProj.Utilities;
 
-namespace VehicleRunsheetMBA
+namespace VehicleRunsheetMBAProj
 {
     public class Startup
     {
@@ -28,19 +28,27 @@ namespace VehicleRunsheetMBA
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<MySettings>(Configuration.GetSection("MySettings"));
+            services.AddScoped<IMySettings, MySettings>();
+            services.AddScoped<Settings>();
+            
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Transient);
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultUI()
+                .AddDefaultTokenProviders();
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+
             services.AddTransient<ITripRepository, TripRepository>();
             services.AddTransient<IRunsheetRepository, RunsheetRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddAdmin(services.BuildServiceProvider());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -13,6 +13,7 @@ namespace VehicleRunsheetMBAProj.Models
         }
         [Key]
         public int Id { get; set; }
+        public string UserId { get; set; }
         public bool InProgress { get; set; }
         public string Driver { get; set; }
         public string VehicleDetails { get; set; }

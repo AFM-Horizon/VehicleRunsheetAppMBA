@@ -2,7 +2,6 @@
 
 @using System.IO
 @using Microsoft.AspNetCore.Hosting
-@using PuppeteerSharp
 @using VehicleRunsheetMBAProj.Data.Repositories
 @using VehicleRunsheetMBAProj.Models
 @using VehicleRunsheetMBAProj.Utilities
@@ -14,45 +13,32 @@
 @*<button type="button" class="btn btn-primary" @onclick="HandleClick">Search</button>*@
 <input type="date" @onchange="HandleClick" />
 
-<input type="button" class="btn btn-primary" @onclick="HandleWrite" />
+@*<input type="button" class="btn btn-primary" @onclick="HandleWrite" />*@
 
 <input type="text" @bind="Email" />
 
 <hr />
-@if (Runsheet != null)
+@if (RunsheetEntity != null)
 {
-    <a class="btn btn-warning" href="pdfview/@Runsheet.Id">View PDF</a>
+    <a class="btn btn-warning" href="pdfview/@RunsheetEntity.Id">View PDF</a>
 }
-<TripTableComponent Runsheet="@Runsheet"></TripTableComponent>
+<TripTableComponent Runsheet="@RunsheetEntity"></TripTableComponent>
 
 @code {
     public DateTime Date { get; set; }
-    public Runsheet Runsheet { get; set; }
+    public Runsheet RunsheetEntity { get; set; }
     public string Email { get; set; }
 
     private async Task HandleClick(ChangeEventArgs e)
     {
         Date = DateTime.Parse(e.Value.ToString());
         var result = await Unit.Runsheets.GetAllWithChildren();
-        Runsheet = result.FirstOrDefault(x => x.Date.Date == Date.Date);
+        RunsheetEntity = result.FirstOrDefault(x => x.Date.Date == Date.Date);
     }
 
     private async Task HandleWrite()
     {
 
-        await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
-        await using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()
-        {
-            Headless = true
-        }))
-        {
-            var page = await browser.NewPageAsync();
-            
-            await page.GoToAsync($@"{NavMan.BaseUri}/pdfview/{Runsheet.Id}");
-            await page.PdfAsync("test.pdf");
-        }
-        //Need to get base root here
-        //https://stackoverflow.com/questions/57520841/how-to-get-the-base-url-of-a-server-side-blazor-app
     }
 }
 
