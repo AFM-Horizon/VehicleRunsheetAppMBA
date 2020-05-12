@@ -1,16 +1,5 @@
 ﻿@page "/runsheet"
 @attribute [Authorize(Roles = "Admin, Manager, User")]
-@using System.Security.Cryptography.X509Certificates
-@using Microsoft.EntityFrameworkCore
-@using Microsoft.EntityFrameworkCore.ChangeTracking
-@using VehicleRunsheetMBA.Data
-@using VehicleRunsheetMBA.Models
-@using VehicleRunsheetMBAProj.Models
-@using Components
-@using VehicleRunsheetMBAProj.Data.Repositories
-
-@inject IUnitOfWork Unit
-@inject NavigationManager NavigationManager
 
 <div class="container-fluid">
 
@@ -73,83 +62,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <VehicleRunsheetMBAProj.Components.TripTableHighlightComponent />
+                    <VehicleRunsheetMBAProj.Components.TripTableHighlightComponent/>
                 </tbody>
             </table>
         </div>
     </div>
-
 </div>
-
-@code {
-    [CascadingParameter]
-    Task<AuthenticationState> AuthenticationStateTask { get; set; }
-    private Runsheet runsheetViewModel = new Runsheet() { InProgress = true };
-    private Runsheet active = null;
-    private bool isActiveTrip;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthenticationStateTask;
-        var user = authState.User;
-        var claims = user.Claims;
-        var userId = user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-
-        var allRunsheets = await Unit.Runsheets.GetAllWithChildren();
-        active = allRunsheets.FirstOrDefault(x => x.UserId == userId && x.InProgress);
-
-        if (active != null)
-        {
-            runsheetViewModel.Trips = active.Trips;
-            runsheetViewModel.UserId = active.UserId;
-            runsheetViewModel.InProgress = active.InProgress;
-            runsheetViewModel.Date = active.Date;
-            runsheetViewModel.Id = active.Id;
-            runsheetViewModel.Driver = active.Driver;
-            runsheetViewModel.StartOdometer = active.StartOdometer;
-            runsheetViewModel.EndOdometer = active.EndOdometer;
-            runsheetViewModel.VehicleDetails = active.VehicleDetails;
-        }
-
-        var result = active?.Trips.Find(x => x.InProgress);
-        if (result != null)
-        {
-            isActiveTrip = true;
-        }
-
-        if (active == null)
-        {
-            active = new Runsheet() { InProgress = true, UserId = userId };
-        }
-    }
-
-    private async Task HandleSuccess()
-    {
-        active.Trips = runsheetViewModel.Trips;
-        active.InProgress = runsheetViewModel.InProgress;
-        active.Date = runsheetViewModel.Date;
-        active.Driver = runsheetViewModel.Driver;
-        active.StartOdometer = runsheetViewModel.StartOdometer;
-        active.EndOdometer = runsheetViewModel.EndOdometer;
-        active.VehicleDetails = runsheetViewModel.VehicleDetails;
-
-        if (active.Id == 0)
-        {
-            await Unit.Runsheets.AddAsync(active);
-        }
-        else
-        {
-            await Unit.Runsheets.UpdateAsync(active);
-        }
-
-        NavigationManager.NavigateTo($"Trip/{active.Id}");
-    }
-
-    private async Task HandleFinalize()
-    {
-        active.Date = DateTime.Today;
-        active.InProgress = false;
-        await Unit.Runsheets.UpdateAsync(active);
-        runsheetViewModel = new Runsheet();
-    }
-}

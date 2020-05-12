@@ -1,35 +1,25 @@
 ﻿@page "/Trip"
 @page "/Trip/{runsheetId}"
 
+@using VehicleRunsheetMBA.Models
+
 @attribute [Authorize(Roles = "Admin, Manager, User")]
 
-@using Microsoft.EntityFrameworkCore.ChangeTracking
-@using VehicleRunsheetMBA.Data
-@using VehicleRunsheetMBA.Models
-@using VehicleRunsheetMBAProj.Data.Repositories
-@using VehicleRunsheetMBAProj.Mappers
-@using VehicleRunsheetMBAProj.Models
-
-@inject NavigationManager NavigationManager
-@inject IUnitOfWork Unit
-
 <h3>Trip</h3>
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-5">
             @if (activeTrip == null)
             {
-            <div>
-                <div class="fa fa-clock fa-spin"></div>
-            </div>
+                <div>
+                    <div class="fa fa-clock fa-spin"></div>
+                </div>
             }
             else
             {
                 <EditForm Model="@tripFormModel" OnValidSubmit="HandleSuccess">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
-
                     <div class="my-4">
                         <span class="oi oi-timer text-warning"></span> Start
                         <strong><input type="time" class="form-control" @bind="@tripFormModel.StartTime" /></strong>
@@ -54,8 +44,6 @@
                             {
                                 tripFormModel.Orders.Add(new Order() { OrderNumber = CurrentOrder });
                                 CurrentOrder = "";
-
-                                //Context.SaveChanges();
                             }
                         }
                         <button class="btn btn-sm btn-warning mb-1" @onclick="AddOrder">Add Order#</button>
@@ -94,78 +82,3 @@
         </div>
     </div>
 </div>
-
-@code {
-
-    [Parameter]
-    public string runsheetId { get; set; }
-
-    private int _id;
-    private List<Order> orders;
-    private Trip tripFormModel = new Trip();
-    private Trip activeTrip = null;
-    private Runsheet runsheet;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        var result = int.TryParse(runsheetId, out _id);
-        runsheet = await Unit.Runsheets.GetByIdAsync(_id);
-
-        var trips = await Unit.Trips.Find(x => x.InProgress && x.RunsheetId == _id);
-        activeTrip = trips.FirstOrDefault();
-
-        if (activeTrip != null)
-        {
-            tripFormModel = TripMapper.MapTrip(activeTrip, tripFormModel);
-        }
-
-        if (activeTrip == null)
-        {
-            activeTrip = new Trip() { InProgress = true };
-            tripFormModel.StartTime = DateTime.Now;
-            tripFormModel.InProgress = true;
-        }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-
-    }
-
-
-    private async Task HandleSuccess()
-    {
-        activeTrip = TripMapper.MapTrip(tripFormModel, activeTrip);
-
-        runsheet = await Unit.Runsheets.GetByIdAsync(_id);
-
-        if (activeTrip.Id == 0)
-        {
-            runsheet.Trips.Add(activeTrip);
-            await Unit.Runsheets.UpdateAsync(runsheet);
-        }
-        else
-        {
-            await Unit.Trips.UpdateAsync(activeTrip);
-        }
-
-        NavigationManager.NavigateTo("/");
-    }
-
-    private void HandleStartTime()
-    {
-        tripFormModel.StartTime = DateTime.Now;
-    }
-
-    private void HandleStopTime()
-    {
-        tripFormModel.EndTime = DateTime.Now;
-    }
-
-    private async Task HandleFinalize()
-    {
-        activeTrip.InProgress = false;
-        await Unit.Trips.UpdateAsync(activeTrip);
-        NavigationManager.NavigateTo("/runsheet");
-    }
-}

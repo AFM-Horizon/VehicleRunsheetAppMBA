@@ -12,6 +12,7 @@ using VehicleRunsheetMBA.Configuration;
 using VehicleRunsheetMBA.Data;
 using VehicleRunsheetMBAProj.Data;
 using VehicleRunsheetMBAProj.Data.Repositories;
+using VehicleRunsheetMBAProj.Utilities;
 
 namespace VehicleRunsheetMBAProj
 {
@@ -49,6 +50,7 @@ namespace VehicleRunsheetMBAProj
             services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddAdmin(services.BuildServiceProvider());
+            services.AddTransient<IUserInfoProvider, UserInfoProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

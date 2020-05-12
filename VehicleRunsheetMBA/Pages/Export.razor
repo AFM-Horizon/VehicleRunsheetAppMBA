@@ -1,52 +1,30 @@
 ﻿@page "/export"
 @attribute [Authorize(Roles = "Admin, Manager, User")]
 
-@using System.IO
-@using Microsoft.AspNetCore.Hosting
-@using VehicleRunsheetMBAProj.Data.Repositories
-@using VehicleRunsheetMBAProj.Models
-@using VehicleRunsheetMBAProj.Utilities
 <h3>Export</h3>
 
-@inject IUnitOfWork Unit
 @inject NavigationManager NavMan
 
-@*<button type="button" class="btn btn-primary" @onclick="HandleClick">Search</button>*@
-<input type="date" @onchange="HandleClick" />
+<AuthorizeView Roles="Admin, Manager">
+    <select @onchange="HandleUserNameChange">
+        @if (_users != null)
+        {
+            <option selected>Choose User...</option>
+            @foreach (var user in _users)
+            {
+                <option value="@user.Id">@user.UserName</option>
+            }
+        }
+    </select>
+</AuthorizeView>
 
-@*<input type="button" class="btn btn-primary" @onclick="HandleWrite" />*@
-
-<input type="text" @bind="Email" />
+<input type="date" @onchange="HandleDateChange"/>
 
 <hr />
-@if (RunsheetEntity != null)
+@if (_runsheet != null)
 {
-    <a class="btn btn-warning" href="pdfview/@RunsheetEntity.Id">View PDF</a>
+    <a class="btn btn-warning" href="pdfview/@_runsheet.Id">Print View</a>
 }
-<TripTableComponent Runsheet="@RunsheetEntity"></TripTableComponent>
 
-@code {
-    [CascadingParameter]
-    Task<AuthenticationState> AuthenticationStateTask { get; set; }
-    public DateTime Date { get; set; }
-    public Runsheet RunsheetEntity { get; set; }
-    public string Email { get; set; }
-
-    private async Task HandleClick(ChangeEventArgs e)
-    {
-        var authState = await AuthenticationStateTask;
-        var user = authState.User;
-        var claims = user.Claims;
-        var userId = user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-
-        Date = DateTime.Parse(e.Value.ToString());
-        var result = await Unit.Runsheets.GetAllWithChildren();
-        RunsheetEntity = result.FirstOrDefault(x => x.UserId == userId && x.Date.Date == Date.Date);
-    }
-
-    private async Task HandleWrite()
-    {
-
-    }
-}
+<TripTableComponent Runsheet="@_runsheet"></TripTableComponent>
 
