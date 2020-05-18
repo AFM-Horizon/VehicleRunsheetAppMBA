@@ -1,5 +1,4 @@
-﻿using VehicleRunsheetMBA.Data;
-using VehicleRunsheetMBA.Models;
+﻿using VehicleRunsheetMBA.Models;
 
 namespace VehicleRunsheetMBAProj.Data.Repositories
 {

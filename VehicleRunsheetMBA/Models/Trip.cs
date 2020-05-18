@@ -10,9 +10,6 @@ namespace VehicleRunsheetMBA.Models
 {
     public class Trip
     {
-        private DateTime startTime;
-        private DateTime endTime;
-
         public Trip()
         {
             Orders = new List<Order>();
@@ -23,19 +20,8 @@ namespace VehicleRunsheetMBA.Models
         public int RunsheetId { get; set; }
         public Runsheet Runsheet { get; set; }
         public bool InProgress { get; set; }
-
-        public DateTime StartTime
-        {
-            get => startTime.AddHours(10);
-            set => startTime = value.AddHours(-10);
-        }
-
-        public DateTime EndTime
-        {
-            get => endTime.AddHours(10); 
-            set => endTime = value.AddHours(-10);
-        }
-
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
         public string Customer { get; set; }
         [MaxLength(5)]
         public List<Order> Orders { get; set; }

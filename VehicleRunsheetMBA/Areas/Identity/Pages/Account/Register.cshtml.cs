@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using VehicleRunsheetMBAProj.Utilities;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace VehicleRunsheetMBAProj.Areas.Identity.Pages.Account
 {
@@ -64,6 +60,12 @@ namespace VehicleRunsheetMBAProj.Areas.Identity.Pages.Account
 
             [Display(Name = "Manager")] 
             public bool IsManager { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Name")]
+            [MaxLength(100)]
+            public string Name { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -78,8 +80,10 @@ namespace VehicleRunsheetMBAProj.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new IdentityUser { UserName = Input.Name, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
+                await _userManager.AddClaimAsync(user, new Claim("UserName", Input.Name));
 
                 //TODO Creating Roles to be extracted into it's own class
                 if (Input.IsManager)

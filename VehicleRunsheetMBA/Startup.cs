@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -9,9 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using VehicleRunsheetMBA.Areas.Identity;
 using VehicleRunsheetMBA.Configuration;
-using VehicleRunsheetMBA.Data;
 using VehicleRunsheetMBAProj.Data;
-using VehicleRunsheetMBAProj.Data.Repositories;
+using VehicleRunsheetMBAProj.ServiceExtensions;
 using VehicleRunsheetMBAProj.Utilities;
 
 namespace VehicleRunsheetMBAProj
@@ -45,10 +43,7 @@ namespace VehicleRunsheetMBAProj
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 
-            services.AddTransient<ITripRepository, TripRepository>();
-            services.AddTransient<IRunsheetRepository, RunsheetRepository>();
-            services.AddTransient<IOrderRepository, OrderRepository>();
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddRepositoryServices();
             services.AddAdmin(services.BuildServiceProvider());
             services.AddTransient<IUserInfoProvider, UserInfoProvider>();
         }

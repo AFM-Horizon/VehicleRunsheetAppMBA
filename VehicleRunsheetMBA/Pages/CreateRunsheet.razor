@@ -1,4 +1,4 @@
-﻿@page "/runsheet"
+﻿@page "/"
 @attribute [Authorize(Roles = "Admin, Manager, User")]
 
 <div class="container-fluid">
@@ -28,11 +28,16 @@
                     </div>
                     <div class="my-4">
                         <span class="oi oi-person text-warning"></span> Driver
-                        <InputText class="form-control" @bind-Value="@runsheetViewModel.Driver" />
+                        <InputText class="form-control" @bind-Value="@runsheetViewModel.Driver"/>
                     </div>
                     <div class="my-4">
                         <span class="oi oi-cart text-warning"></span> Vehicle Details
-                        <InputText class="form-control" @bind-Value="@runsheetViewModel.VehicleDetails" />
+                        <InputSelect class="form-control" @bind-Value="@vehicleId">
+                            @foreach(var vehicle in vehicles)
+                            {
+                                <option value="@vehicle.Id">@vehicle.Rego - @vehicle.VehicleName</option>
+                            }
+                        </InputSelect>
                     </div>
                     <br />
                     @if (!isActiveTrip)

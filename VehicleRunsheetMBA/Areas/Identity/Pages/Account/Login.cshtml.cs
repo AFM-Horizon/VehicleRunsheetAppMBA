@@ -40,7 +40,7 @@ namespace VehicleRunsheetMBAProj.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [EmailAddress]
+            [Display(Name = "User Name")]
             public string Email { get; set; }
 
             [Required]
@@ -74,39 +74,6 @@ namespace VehicleRunsheetMBAProj.Areas.Identity.Pages.Account
                 Input.Email, Input.Password, false, false);
 
             var user = await _userManager.FindByEmailAsync(Input.Email);
-
-            if (signinResult.IsNotAllowed)
-            {
-                if (!await _userManager.IsEmailConfirmedAsync(user))
-                {
-                    // Email isn't confirmed.
-                }
-
-                if (!await _userManager.IsPhoneNumberConfirmedAsync(user))
-                {
-                    // Phone Number isn't confirmed.
-                }
-            }
-            else if (signinResult.IsLockedOut)
-            {
-                // Account is locked out.
-            }
-            else if (signinResult.RequiresTwoFactor)
-            {
-                // 2FA required.
-            }
-            else
-            {
-                // Username or password is incorrect.
-                if (user == null)
-                {
-                    // Username is incorrect.
-                }
-                else
-                {
-                    // Password is incorrect.
-                }
-            }
 
             returnUrl = returnUrl ?? Url.Content("~/");
 

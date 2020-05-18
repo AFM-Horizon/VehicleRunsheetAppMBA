@@ -48,7 +48,7 @@ namespace VehicleRunsheetMBAProj
             {
                 var admin = new IdentityUser()
                 {
-                    UserName = _settings.AdminEmail,
+                    UserName = Admin,
                     Email = _settings.AdminEmail
                 };
 
@@ -68,6 +68,7 @@ namespace VehicleRunsheetMBAProj
                     await _userManager.AddToRoleAsync(createdUser, Admin);
                     await _userManager.AddClaimAsync(createdUser, new Claim("Id", admin.Id));
                     await _userManager.AddClaimAsync(createdUser, new Claim("Role", Admin));
+                    await _userManager.AddClaimAsync(createdUser, new Claim("UserName", Admin));
                 }
             }
         }

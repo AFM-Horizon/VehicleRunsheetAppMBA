@@ -12,7 +12,7 @@ namespace VehicleRunsheetMBAProj.Data.Repositories
         Task<T> GetByIdAsync(int id);
         Task UpdateAsync(T entity);
         Task AddAsync(T entity);
-        Task DeleteAsync(T entity);
+        Task DeleteAsync(int id);
         public Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
     }
 }

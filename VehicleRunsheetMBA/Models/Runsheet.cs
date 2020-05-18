@@ -16,7 +16,7 @@ namespace VehicleRunsheetMBAProj.Models
         public string UserId { get; set; }
         public bool InProgress { get; set; }
         public string Driver { get; set; }
-        public string VehicleDetails { get; set; }
+        public VehicleDetails VehicleDetails { get; set; }
         public int StartOdometer { get; set; }
         public int EndOdometer { get; set; }
         public DateTime Date { get; set; }

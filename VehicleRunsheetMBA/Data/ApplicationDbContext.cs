@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using VehicleRunsheetMBA.Models;
 using VehicleRunsheetMBAProj.Models;
 
-namespace VehicleRunsheetMBA.Data
+namespace VehicleRunsheetMBAProj.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
@@ -15,5 +15,6 @@ namespace VehicleRunsheetMBA.Data
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Runsheet> Runsheets { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<VehicleDetails> VehicleDetails { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using VehicleRunsheetMBA.Data;
+using VehicleRunsheetMBAProj.Data;
 
 namespace VehicleRunsheetMBAProj.Migrations
 {
@@ -15,7 +15,7 @@ namespace VehicleRunsheetMBAProj.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -293,12 +293,39 @@ namespace VehicleRunsheetMBAProj.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VehicleDetails")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("VehicleDetailsId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("VehicleDetailsId");
+
                     b.ToTable("Runsheets");
+                });
+
+            modelBuilder.Entity("VehicleRunsheetMBAProj.Models.VehicleDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Rego")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(7)")
+                        .HasMaxLength(7);
+
+                    b.Property<string>("VehicleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("VehicleType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VehicleDetails");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -368,6 +395,13 @@ namespace VehicleRunsheetMBAProj.Migrations
                         .HasForeignKey("RunsheetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("VehicleRunsheetMBAProj.Models.Runsheet", b =>
+                {
+                    b.HasOne("VehicleRunsheetMBAProj.Models.VehicleDetails", "VehicleDetails")
+                        .WithMany("Runsheets")
+                        .HasForeignKey("VehicleDetailsId");
                 });
 #pragma warning restore 612, 618
         }

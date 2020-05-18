@@ -81,7 +81,7 @@ namespace VehicleRunsheetMBAProj.Pages
         {
             activeTrip.InProgress = false;
             await Unit.Trips.UpdateAsync(activeTrip);
-            NavigationManager.NavigateTo("/runsheet");
+            NavigationManager.NavigateTo("/");
         }
     }
 }

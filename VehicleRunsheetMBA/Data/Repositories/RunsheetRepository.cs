@@ -1,12 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using VehicleRunsheetMBA.Data;
 using VehicleRunsheetMBAProj.Models;
 
 namespace VehicleRunsheetMBAProj.Data.Repositories
@@ -21,12 +16,21 @@ namespace VehicleRunsheetMBAProj.Data.Repositories
 
         public async Task<IEnumerable<Runsheet>> GetAllWithChildren()
         {
-            return await _context.Runsheets.Include(x => x.Trips).ThenInclude(x => x.Orders).ToListAsync();
+            return await _context.Runsheets
+                .Include(x => x.VehicleDetails)
+                .Include(x => x.Trips)
+                .ThenInclude(x => x.Orders)
+                .ToListAsync();
         }
 
         public async Task<Runsheet> GetByIdWithChildren(int id)
         {
-            return await _context.Runsheets.Include(x => x.Trips).ThenInclude(x => x.Orders).Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _context.Runsheets
+                .Include(x => x.VehicleDetails)
+                .Include(x => x.Trips)
+                .ThenInclude(x => x.Orders)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
         }
     }
 }

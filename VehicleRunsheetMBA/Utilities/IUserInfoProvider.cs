@@ -7,5 +7,6 @@ namespace VehicleRunsheetMBAProj.Utilities
     {
         Task<ClaimsPrincipal> GetUser();
         Task<string> GetId();
+        Task<string> GetName();
     }
 }
