@@ -48,6 +48,14 @@ namespace VehicleRunsheetMBAProj.Pages
             }
         }
 
+        private async Task HandleReturn()
+        {
+            tripFormModel.Orders.Add(new Order() {OrderNumber = "RETURN"});
+            tripFormModel.ReceivedBy = "N/A";
+            tripFormModel.Customer = "M.B.A";
+            tripFormModel.EndTime = DateTime.Now;
+        }
+
         private async Task HandleSuccess()
         {
             activeTrip = TripMapper.MapTrip(tripFormModel, activeTrip);

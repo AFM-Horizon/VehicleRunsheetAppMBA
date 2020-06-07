@@ -13,11 +13,9 @@ namespace VehicleRunsheetMBAProj
 {
     public static class AdminStartup
     {
-        public static async Task<IServiceCollection> AddAdmin(this IServiceCollection service, IServiceProvider provider)
+        public static void AddAdmin(this IServiceCollection service, IServiceProvider provider)
         {
-            await CreateRoles(provider);
-
-            return service;
+            CreateRoles(provider).GetAwaiter().GetResult();
         }
 
         private static async Task CreateRoles(IServiceProvider service)

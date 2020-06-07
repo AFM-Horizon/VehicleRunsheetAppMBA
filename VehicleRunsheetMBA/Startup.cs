@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,14 @@ namespace VehicleRunsheetMBAProj
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
+
+            services.AddSignalR().AddAzureSignalR(
+                options =>
+                {
+                    options.ServerStickyMode = ServerStickyMode.Required;
+                    options.ConnectionString =
+                        "Endpoint=https://mbasignalr.service.signalr.net;AccessKey=wJqgPGyuBwgLrtB/ezVqhY4ZimqtlOZTR/+egnlEcHk=;Version=1.0;";
+                });
 
             services.AddRazorPages();
             services.AddServerSideBlazor();

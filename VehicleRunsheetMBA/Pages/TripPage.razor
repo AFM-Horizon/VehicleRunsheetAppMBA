@@ -17,6 +17,7 @@
             }
             else
             {
+                <button class="btn btn-info btn-block" @onclick="HandleReturn">Auto-fill Return Trip</button>
                 <EditForm Model="@tripFormModel" OnValidSubmit="HandleSuccess">
                     <DataAnnotationsValidator />
                     <ValidationSummary />

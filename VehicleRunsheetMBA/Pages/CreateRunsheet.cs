@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.CodeAnalysis.Differencing;
 using VehicleRunsheetMBAProj.Data.Repositories;
 using VehicleRunsheetMBAProj.Models;
 using VehicleRunsheetMBAProj.Utilities;
@@ -23,13 +23,33 @@ namespace VehicleRunsheetMBAProj.Pages
         public IUserInfoProvider UserInfoProvider { get; set; }
 
         private Runsheet runsheetViewModel = new Runsheet() { InProgress = true };
-        private string vehicleId = "";
+        
         private Runsheet active = null;
         private IEnumerable<VehicleDetails> vehicles = new List<VehicleDetails>();
         private bool isActiveTrip;
+        private bool canFinalize = true;
+        private EditContext editContext;
+
+        private int vehicleId;
+
+        public string VehicleId
+        {
+            get => vehicleId.ToString();
+            set
+            {
+                if (int.TryParse(value, out var id))
+                {
+                    runsheetViewModel.VehicleDetailsId = id;
+                    active.VehicleDetailsId = runsheetViewModel.VehicleDetailsId;
+                }
+                vehicleId = id;
+            }
+        }
 
         protected override async Task OnInitializedAsync()
         {
+            editContext = new EditContext(runsheetViewModel);
+
             var user = await UserInfoProvider.GetUser();
             var userId = await UserInfoProvider.GetId();
             vehicles = await Unit.Vehicles.GetAllAsync();
@@ -49,7 +69,7 @@ namespace VehicleRunsheetMBAProj.Pages
                 runsheetViewModel.StartOdometer = active.StartOdometer;
                 runsheetViewModel.EndOdometer = active.EndOdometer;
                 runsheetViewModel.VehicleDetails = active.VehicleDetails;
-                vehicleId = active.VehicleDetails.Id.ToString();
+                VehicleId = active.VehicleDetails?.Id.ToString();
             }
 
             var result = active?.Trips.Find(x => x.InProgress);
@@ -69,7 +89,16 @@ namespace VehicleRunsheetMBAProj.Pages
             }
         }
 
-        private async Task HandleSuccess()
+        private async Task EditTrip()
+        {
+            if (editContext.Validate())
+            {
+                await UpdateFormValues();
+                NavigationManager.NavigateTo($"Trip/{active.Id}");
+            }
+        }
+
+        private async Task UpdateFormValues()
         {
             active.Trips = runsheetViewModel.Trips;
             active.InProgress = runsheetViewModel.InProgress;
@@ -79,31 +108,38 @@ namespace VehicleRunsheetMBAProj.Pages
             active.EndOdometer = runsheetViewModel.EndOdometer;
             active.VehicleDetails = runsheetViewModel.VehicleDetails;
 
-            if (int.TryParse(vehicleId, out var id))
-            {
-                var vehicle = await Unit.Vehicles.GetByIdAsync(id);
-                vehicle.Runsheets.Add(active);
-                await Unit.Vehicles.UpdateAsync(vehicle);
-            }
-
             if (active.Id == 0)
             {
                 await Unit.Runsheets.AddAsync(active);
             }
-            //else
-            //{
-            //    await Unit.Runsheets.UpdateAsync(active);
-            //}
-
-            NavigationManager.NavigateTo($"Trip/{active.Id}");
+            else
+            {
+                await Unit.Runsheets.UpdateAsync(active);
+            }
         }
 
         private async Task HandleFinalize()
         {
+            if (!editContext.Validate())
+            {
+                return;
+            }
+
+            await UpdateFormValues();
+            var stillActive = await Unit.Trips.Find(x => x.RunsheetId == active.Id && x.InProgress);
+
+            if (stillActive.Count() != 0)
+            {
+                canFinalize = false;
+                StateHasChanged();
+                return;
+            }
+
             active.Date = DateTime.Today;
             active.InProgress = false;
             await Unit.Runsheets.UpdateAsync(active);
             runsheetViewModel = new Runsheet();
+            NavigationManager.NavigateTo("/", true);
         }
     }
 }

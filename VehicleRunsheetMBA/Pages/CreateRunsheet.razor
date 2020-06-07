@@ -2,7 +2,6 @@
 @attribute [Authorize(Roles = "Admin, Manager, User")]
 
 <div class="container-fluid">
-
     <div class="row">
         <div class="col-md-5">
             @if (active == null)
@@ -14,9 +13,15 @@
             else
             {
                 <h3><strong>Run-Sheet</strong></h3>
-                <EditForm Model="@runsheetViewModel" OnValidSubmit="HandleSuccess">
+                <EditForm EditContext="@editContext">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
+                    @if (!canFinalize)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            Runsheet Cannot Be Finalized While A Trip Is Still Being Edited!
+                        </div>
+                    }
 
                     <div class="my-4">
                         <span class="oi oi-dial text-warning"></span> Start Odometer
@@ -28,29 +33,30 @@
                     </div>
                     <div class="my-4">
                         <span class="oi oi-person text-warning"></span> Driver
-                        <InputText class="form-control" @bind-Value="@runsheetViewModel.Driver"/>
+                        <InputText class="form-control" @bind-Value="@runsheetViewModel.Driver" />
                     </div>
                     <div class="my-4">
                         <span class="oi oi-cart text-warning"></span> Vehicle Details
-                        <InputSelect class="form-control" @bind-Value="@vehicleId">
-                            @foreach(var vehicle in vehicles)
-                            {
+                        <InputSelect class="form-control" @bind-Value="@VehicleId">
+                            <option value="0">Choose a vehicle...</option>
+                            @foreach (var vehicle in vehicles)
+                                {
                                 <option value="@vehicle.Id">@vehicle.Rego - @vehicle.VehicleName</option>
-                            }
+                                }
                         </InputSelect>
                     </div>
                     <br />
                     @if (!isActiveTrip)
                     {
-                        <button class="btn btn-primary btn-lg btn-block" type="submit">Create New Trip</button>
+                        <button class="btn btn-primary btn-lg btn-block" type="submit" @onclick="EditTrip">Create New Trip</button>
                     }
                     else
                     {
-                        <button class="btn btn-primary btn-lg btn-block" type="submit">Edit Trip</button>
+                        <button class="btn btn-primary btn-lg btn-block" type="submit" @onclick="@EditTrip">Edit Trip</button>
                     }
+                    <hr />
+                    <button class="btn btn-success btn-lg btn-block" type="submit" @onclick="HandleFinalize">Finalize Runsheet</button>
                 </EditForm>
-                <hr />
-                <button class="btn btn-success btn-lg btn-block" @onclick="HandleFinalize">Finalize Runsheet</button>
                 <br />
             }
         </div>
