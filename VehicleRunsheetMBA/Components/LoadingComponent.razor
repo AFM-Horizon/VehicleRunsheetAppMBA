@@ -1,0 +1,19 @@
+﻿@code
+{
+    [Parameter]
+    public RenderFragment PageToRender { get; set; }
+
+    [Parameter]
+    public object Active { get; set; }
+}
+
+@if (Active == null)
+{
+    <div class="text-center" style="margin-top: 25%">
+        <div class="spinner-border text-info" style="width: 7rem; height: 7rem; border-width: thick"></div>
+    </div>
+}
+else
+{
+    @PageToRender;
+}

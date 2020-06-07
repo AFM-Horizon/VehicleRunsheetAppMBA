@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.CodeAnalysis.Differencing;
 using VehicleRunsheetMBAProj.Data.Repositories;
 using VehicleRunsheetMBAProj.Models;
 using VehicleRunsheetMBAProj.Utilities;
@@ -50,7 +49,6 @@ namespace VehicleRunsheetMBAProj.Pages
         {
             editContext = new EditContext(runsheetViewModel);
 
-            var user = await UserInfoProvider.GetUser();
             var userId = await UserInfoProvider.GetId();
             vehicles = await Unit.Vehicles.GetAllAsync();
 

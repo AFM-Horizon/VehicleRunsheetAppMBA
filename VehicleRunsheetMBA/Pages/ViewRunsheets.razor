@@ -1,4 +1,5 @@
 ﻿@page "/viewrunsheets"
+@using VehicleRunsheetMBAProj.Utilities
 @attribute [Authorize(Roles = "Admin, Manager, User")]
 
 @if (Runsheets != null)
@@ -8,25 +9,29 @@
     <div>
         <table class="table table-responsive-md table-dark">
             <thead>
-            <tr>
-                <th><span class="oi oi-sun text-warning"></span> Date</th>
-                <th><span class="oi oi-dial text-warning"></span> Start Odometer</th>
-                <th><span class="oi oi-dial text-warning"></span> End Odometer</th>
-                <th><span class="oi oi-person text-warning"></span> Driver</th>
-                <th><span class="oi oi-cart text-warning"></span> Vehicle Details</th>
-            </tr>
+                <tr>
+                    <th><span class="oi oi-sun text-warning"></span> Date</th>
+                    <th><span class="oi oi-dial text-warning"></span> Start Odometer</th>
+                    <th><span class="oi oi-dial text-warning"></span> End Odometer</th>
+                    <th><span class="oi oi-person text-warning"></span> Driver</th>
+                    <th><span class="oi oi-cart text-warning"></span> Vehicle Details</th>
+                </tr>
             </thead>
             <tbody>
-            @foreach (var runsheet in Runsheets)
-            {
-                <tr>
-                    <td>@runsheet.Date.ToShortDateString()</td>
-                    <td>@runsheet.StartOdometer</td>
-                    <td>@runsheet.EndOdometer</td>
-                    <td>@runsheet.Driver</td>
-                    <td>@runsheet.VehicleDetails</td>
-                </tr>
-            }
+                @foreach (var runsheet in Runsheets)
+                {
+                    <tr>
+                        <td>@runsheet.Date.ToShortDateString()</td>
+                        <td>@runsheet.StartOdometer</td>
+                        <td>@runsheet.EndOdometer</td>
+                        <td>@runsheet.Driver</td>
+                        <td>
+                            <span class="@VehicleEnumToIconConverter.GetEnumIcon(@runsheet.VehicleDetails.VehicleType)"></span>
+                            @runsheet.VehicleDetails.Rego
+                            @runsheet.VehicleDetails.VehicleName
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

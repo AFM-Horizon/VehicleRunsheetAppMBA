@@ -15,5 +15,10 @@ namespace VehicleRunsheetMBAProj.Data.Repositories
         public TripRepository(ApplicationDbContext context) : base(context)
         {
         }
+
+        public Task<Trip> GetTripWithChildrenByRunsheetId(int runsheetId)
+        {
+            return _context.Trips.Include(x => x.Orders).FirstOrDefaultAsync(x => x.RunsheetId == runsheetId && x.InProgress);
+        }
     }
 }

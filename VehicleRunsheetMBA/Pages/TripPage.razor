@@ -5,81 +5,79 @@
 
 @attribute [Authorize(Roles = "Admin, Manager, User")]
 
-<h3>Trip</h3>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-5">
-            @if (activeTrip == null)
-            {
-                <div>
-                    <div class="fa fa-clock fa-spin"></div>
-                </div>
-            }
-            else
-            {
-                <button class="btn btn-info btn-block" @onclick="HandleReturn">Auto-fill Return Trip</button>
-                <EditForm Model="@tripFormModel" OnValidSubmit="HandleSuccess">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    <div class="my-4">
-                        <span class="oi oi-timer text-warning"></span> Start
-                        <strong><input type="time" class="form-control" @bind="@tripFormModel.StartTime" /></strong>
-                    </div>
-                    <div class="my-4">
-
-                        <span class="oi oi-timer text-warning"></span> End
-                        <a class="btn btn-sm btn-warning m-1" @onclick="HandleStopTime">Set End</a>
-                        <strong><input type="time" class="form-control" @bind="@tripFormModel.EndTime" /></strong>
-                    </div>
-                    <div class="my-4">
-                        <span class="oi oi-person text-warning"></span> Customer
-                        <InputText class="form-control" @bind-Value="@tripFormModel.Customer" />
-                    </div>
-                    <div class="my-4">
-                        <span class="oi oi-script text-warning"></span> Order#
-                        @code
-                    {
-                            public string CurrentOrder { get; set; }
-
-                            private void AddOrder()
-                            {
-                                tripFormModel.Orders.Add(new Order() { OrderNumber = CurrentOrder });
-                                CurrentOrder = "";
-                            }
+<LoadingComponent Active="@activeTrip">
+    <PageToRender>
+        <h3>Trip</h3>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-5">
+                    <button class="btn btn-info btn-block" @onclick="HandleReturn">Auto-fill Return Trip</button>
+                    <EditForm EditContext="@editContext">
+                        <FluentValidator TValidator="TripValidator"></FluentValidator>
+                        @if (canShowValidationSummary)
+                        {
+                            <ValidationSummary />
                         }
-                        <button class="btn btn-sm btn-warning mb-1" @onclick="AddOrder">Add Order#</button>
-                        <input type="text" class="form-control" @bind="@CurrentOrder" />
-                    </div>
-                    <div class="my-4">
-                        <span class="oi oi-wrench text-warning"></span> Received By
-                        <InputText class="form-control" @bind-Value="@tripFormModel.ReceivedBy" />
-                    </div>
-                    <br />
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Update</button>
-                    <hr />
+                        <div class="my-4">
+                            <span class="oi oi-timer text-warning"></span> Start
+                            <strong><input type="time" class="form-control" @bind="@tripFormModel.StartTime" /></strong>
+                        </div>
+                        <div class="my-4">
 
-                </EditForm>
-                <button class="btn btn-info btn-lg btn-block" @onclick="HandleFinalize">Finalize Trip</button>
-                <br />
-            }
+                            <span class="oi oi-timer text-warning"></span> End
+                            <a class="btn btn-sm btn-warning m-1" @onclick="HandleStopTime">Set End</a>
+                            <strong><input type="time" class="form-control" @bind="@tripFormModel.EndTime" /></strong>
+                        </div>
+                        <div class="my-4">
+                            <span class="oi oi-person text-warning"></span> Customer
+                            <InputText class="form-control" @bind-Value="@tripFormModel.Customer" />
+                            @if (canShowValidationSummary)
+                            {
+                                <ValidationMessage For="() => tripFormModel.Customer"></ValidationMessage>
+                            }
+                        </div>
+                        <div class="my-4">
+                            <span class="oi oi-script text-warning"></span> Order#
+                            <button class="btn btn-sm btn-warning mb-1" @onclick="AddOrder">Add Order#</button>
+                            <input type="text" class="form-control" @bind="@CurrentOrder" />
+                            <ValidationMessage For="() => tripFormModel.Orders"></ValidationMessage>
+                        </div>
+                        <div class="my-4">
+                            <span class="oi oi-wrench text-warning"></span> Received By
+                            <InputText class="form-control" @bind-Value="@tripFormModel.ReceivedBy" />
+                            @if (canShowValidationSummary)
+                            {
+                                <ValidationMessage For="() => tripFormModel.ReceivedBy"></ValidationMessage>
+                            }
+
+                        </div>
+                        <br />
+                        <button class="btn btn-primary btn-lg btn-block" @onclick="HandleUpdate">Update</button>
+                        <hr />
+                        <button class="btn btn-info btn-lg btn-block" @onclick="HandleFinalize">Finalize Trip</button>
+                    </EditForm>
+                    <br />
+                </div>
+                <div class="col-md-7">
+                    <h3><strong>Order Numbers</strong></h3>
+                    <table class="table table-responsive-md table-dark">
+                        <thead>
+                            <tr>
+                                <th><span class="oi oi-file text-warning"></span> Orders</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in tripFormModel.Orders)
+                            {
+                                <tr>
+                                    <td>@order.OrderNumber</td>
+                                    <td><div class="btn btn-sm btn-danger" @onclick="@(() => HandleDeleteOrder(@order.OrderNumber))"><span class="fa fa-trash"></span></div></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="col-md-7">
-            <h3><strong>Order Numbers</strong></h3>
-            <table class="table table-responsive-md table-dark">
-                <thead>
-                    <tr>
-                        <th><span class="oi oi-file text-warning"></span> Orders</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var order in tripFormModel.Orders)
-                    {
-                        <tr>
-                            <td>@order.OrderNumber</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+    </PageToRender>
+</LoadingComponent>

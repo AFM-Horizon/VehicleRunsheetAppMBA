@@ -1,6 +1,7 @@
 ﻿@page "/managevehicles"
 @using VehicleRunsheetMBAProj.Data.Repositories
 @using VehicleRunsheetMBAProj.Models
+@using VehicleRunsheetMBAProj.Utilities
 <h3>ManageVehicles</h3>
 
 @attribute [Authorize(Roles = "Admin, Manager")]
@@ -52,10 +53,6 @@
     {
         IsEdit = true;
         var vehicleToEdit = await Unit.Vehicles.GetByIdAsync(id);
-        //VehicleDetails.Id = vehicleToEdit.Id;
-        //VehicleDetails.VehicleName = vehicleToEdit.VehicleName;
-        //VehicleDetails.Rego = vehicleToEdit.Rego;
-        //VehicleDetails.PictureUrl = vehicleToEdit.PictureUrl;
         VehicleDetails = vehicleToEdit;
         StateHasChanged();
     }
@@ -118,7 +115,7 @@
                             <tr>
                                 <td>@vehicle.VehicleName</td>
                                 <td>@vehicle.Rego</td>
-                                <td>@vehicle.VehicleType</td>
+                                <td><span class="@VehicleEnumToIconConverter.GetEnumIcon(@vehicle.VehicleType)"></span> @vehicle.VehicleType</td>
                                 <td><span class="btn btn-info btn-sm" @onclick="@(() => HandleEdit(@vehicle.Id))">Edit</span></td>
                                 <td><span class="btn btn-danger btn-sm" @onclick="@(() => HandleDelete(@vehicle.Id))">Delete</span></td>
                             </tr>

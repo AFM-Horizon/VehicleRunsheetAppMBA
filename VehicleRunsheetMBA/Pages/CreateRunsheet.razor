@@ -1,81 +1,77 @@
 ﻿@page "/"
+@using VehicleRunsheetMBAProj.Utilities
 @attribute [Authorize(Roles = "Admin, Manager, User")]
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-5">
-            @if (active == null)
-            {
-                <div>
-                    <div class="fa fa-clock fa-spin"></div>
-                </div>
-            }
-            else
-            {
-                <h3><strong>Run-Sheet</strong></h3>
-                <EditForm EditContext="@editContext">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    @if (!canFinalize)
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            Runsheet Cannot Be Finalized While A Trip Is Still Being Edited!
+<LoadingComponent Active="@active">
+    <PageToRender>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-5">
+                    <h3><strong>Run-Sheet</strong></h3>
+                    <EditForm EditContext="@editContext">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        @if (!canFinalize)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                Runsheet Cannot Be Finalized While A Trip Is Still Being Edited!
+                            </div>
+                        }
+                        <div class="my-4">
+                            <span class="oi oi-dial text-warning"></span> Start Odometer
+                            <InputNumber class="form-control" @bind-Value="@runsheetViewModel.StartOdometer" />
                         </div>
-                    }
-
-                    <div class="my-4">
-                        <span class="oi oi-dial text-warning"></span> Start Odometer
-                        <InputNumber class="form-control" @bind-Value="@runsheetViewModel.StartOdometer" />
-                    </div>
-                    <div class="my-4">
-                        <span class="oi oi-dial text-warning"></span> End Odometer
-                        <InputNumber class="form-control" @bind-Value="@runsheetViewModel.EndOdometer" />
-                    </div>
-                    <div class="my-4">
-                        <span class="oi oi-person text-warning"></span> Driver
-                        <InputText class="form-control" @bind-Value="@runsheetViewModel.Driver" />
-                    </div>
-                    <div class="my-4">
-                        <span class="oi oi-cart text-warning"></span> Vehicle Details
-                        <InputSelect class="form-control" @bind-Value="@VehicleId">
-                            <option value="0">Choose a vehicle...</option>
-                            @foreach (var vehicle in vehicles)
+                        <div class="my-4">
+                            <span class="oi oi-dial text-warning"></span> End Odometer
+                            <InputNumber class="form-control" @bind-Value="@runsheetViewModel.EndOdometer" />
+                        </div>
+                        <div class="my-4">
+                            <span class="oi oi-person text-warning"></span> Driver
+                            <InputText class="form-control" @bind-Value="@runsheetViewModel.Driver" />
+                        </div>
+                        <div class="my-4">
+                            <span class="oi oi-cart text-warning"></span> Vehicle Details
+                            <InputSelect class="form-control" @bind-Value="@VehicleId">
+                                <option value="0">Choose a vehicle...</option>
+                                @foreach (var vehicle in vehicles)
                                 {
-                                <option value="@vehicle.Id">@vehicle.Rego - @vehicle.VehicleName</option>
+                                    <option value="@vehicle.Id">@vehicle.Rego - @vehicle.VehicleName</option>
                                 }
-                        </InputSelect>
-                    </div>
+                            </InputSelect>
+                        </div>
+                        <br />
+                        @if (!isActiveTrip)
+                        {
+                            <button class="btn btn-primary btn-lg btn-block" type="submit" @onclick="EditTrip">Create New Trip</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary btn-lg btn-block" type="submit" @onclick="@EditTrip">Edit Trip</button>
+                        }
+                        <hr />
+                        <button class="btn btn-success btn-lg btn-block" type="submit" @onclick="HandleFinalize">Finalize Runsheet</button>
+                    </EditForm>
                     <br />
-                    @if (!isActiveTrip)
-                    {
-                        <button class="btn btn-primary btn-lg btn-block" type="submit" @onclick="EditTrip">Create New Trip</button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-primary btn-lg btn-block" type="submit" @onclick="@EditTrip">Edit Trip</button>
-                    }
-                    <hr />
-                    <button class="btn btn-success btn-lg btn-block" type="submit" @onclick="HandleFinalize">Finalize Runsheet</button>
-                </EditForm>
-                <br />
-            }
+                </div>
+                <div class="col-md-7">
+                    <h3><strong>Today's Trips</strong></h3>
+                    <table class="table table-responsive-md table-dark">
+                        <thead>
+                            <tr>
+                                <th><span class="oi oi-timer text-warning"></span> Start</th>
+                                <th><span class="oi oi-timer text-warning"></span> End</th>
+                                <th><span class="oi oi-person text-warning"></span> Customer</th>
+                                <th><span class="oi oi-script text-warning"></span> Order#</th>
+                                <th><span class="oi oi-wrench text-warning"></span> Received By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <VehicleRunsheetMBAProj.Components.TripTableHighlightComponent />
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="col-md-7">
-            <h3><strong>Today's Trips</strong></h3>
-            <table class="table table-responsive-md table-dark">
-                <thead>
-                    <tr>
-                        <th><span class="oi oi-timer text-warning"></span> Start</th>
-                        <th><span class="oi oi-timer text-warning"></span> End</th>
-                        <th><span class="oi oi-person text-warning"></span> Customer</th>
-                        <th><span class="oi oi-script text-warning"></span> Order#</th>
-                        <th><span class="oi oi-wrench text-warning"></span> Received By</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <VehicleRunsheetMBAProj.Components.TripTableHighlightComponent/>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+    </PageToRender>
+</LoadingComponent>
+

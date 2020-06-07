@@ -1,4 +1,7 @@
-﻿using VehicleRunsheetMBA.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using VehicleRunsheetMBA.Models;
 
 namespace VehicleRunsheetMBAProj.Data.Repositories
 {

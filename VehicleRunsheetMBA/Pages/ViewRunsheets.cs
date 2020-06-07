@@ -26,12 +26,12 @@ namespace VehicleRunsheetMBAProj.Pages
 
             if (user.IsInRole("Manager") || user.IsInRole("Admin"))
             {
-                var result = await Unit.Runsheets.GetAllAsync();
+                var result = await Unit.Runsheets.GetAllWithChildren();
                 Runsheets = result.ToList();
             }
             else
             {
-                var result = await Unit.Runsheets.GetAllAsync();
+                var result = await Unit.Runsheets.GetAllWithChildren();
                 Runsheets = result.Where(x => x.UserId == userId).ToList();
             }
         }
