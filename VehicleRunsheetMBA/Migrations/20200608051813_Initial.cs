@@ -47,21 +47,18 @@ namespace VehicleRunsheetMBAProj.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Runsheets",
+                name: "VehicleDetails",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InProgress = table.Column<bool>(nullable: false),
-                    Driver = table.Column<string>(nullable: true),
-                    VehicleDetails = table.Column<string>(nullable: true),
-                    StartOdometer = table.Column<int>(nullable: false),
-                    EndOdometer = table.Column<int>(nullable: false),
-                    Date = table.Column<DateTime>(nullable: false)
+                    VehicleName = table.Column<string>(maxLength: 100, nullable: false),
+                    Rego = table.Column<string>(maxLength: 7, nullable: false),
+                    VehicleType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Runsheets", x => x.Id);
+                    table.PrimaryKey("PK_VehicleDetails", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,8 +107,8 @@ namespace VehicleRunsheetMBAProj.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: false)
                 },
@@ -155,8 +152,8 @@ namespace VehicleRunsheetMBAProj.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -166,6 +163,31 @@ namespace VehicleRunsheetMBAProj.Migrations
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Runsheets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(nullable: true),
+                    InProgress = table.Column<bool>(nullable: false),
+                    Driver = table.Column<string>(nullable: true),
+                    VehicleDetailsId = table.Column<int>(nullable: false),
+                    StartOdometer = table.Column<int>(nullable: false),
+                    EndOdometer = table.Column<int>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Runsheets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Runsheets_VehicleDetails_VehicleDetailsId",
+                        column: x => x.VehicleDetailsId,
+                        principalTable: "VehicleDetails",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -259,6 +281,11 @@ namespace VehicleRunsheetMBAProj.Migrations
                 column: "TripId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Runsheets_VehicleDetailsId",
+                table: "Runsheets",
+                column: "VehicleDetailsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Trips_RunsheetId",
                 table: "Trips",
                 column: "RunsheetId");
@@ -295,6 +322,9 @@ namespace VehicleRunsheetMBAProj.Migrations
 
             migrationBuilder.DropTable(
                 name: "Runsheets");
+
+            migrationBuilder.DropTable(
+                name: "VehicleDetails");
         }
     }
 }

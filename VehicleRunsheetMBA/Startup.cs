@@ -7,8 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using VehicleRunsheetMBA.Areas.Identity;
 using VehicleRunsheetMBA.Configuration;
+using VehicleRunsheetMBAProj.Components.ComponentServices;
 using VehicleRunsheetMBAProj.Data;
 using VehicleRunsheetMBAProj.ServiceExtensions;
 using VehicleRunsheetMBAProj.Utilities;
@@ -52,6 +54,7 @@ namespace VehicleRunsheetMBAProj
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 
+            services.AddScoped<IComponentRefreshService, ComponentRefreshService>();
             services.AddRepositoryServices();
             services.AddAdmin(services.BuildServiceProvider());
             services.AddTransient<IUserInfoProvider, UserInfoProvider>();

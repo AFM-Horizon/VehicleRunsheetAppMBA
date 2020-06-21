@@ -10,8 +10,8 @@ using VehicleRunsheetMBAProj.Data;
 namespace VehicleRunsheetMBAProj.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200518151809_VehicleDetailsRunsheetRelationship")]
-    partial class VehicleDetailsRunsheetRelationship
+    [Migration("20200608051813_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -295,7 +295,7 @@ namespace VehicleRunsheetMBAProj.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("VehicleDetailsId")
+                    b.Property<int>("VehicleDetailsId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -402,8 +402,10 @@ namespace VehicleRunsheetMBAProj.Migrations
             modelBuilder.Entity("VehicleRunsheetMBAProj.Models.Runsheet", b =>
                 {
                     b.HasOne("VehicleRunsheetMBAProj.Models.VehicleDetails", "VehicleDetails")
-                        .WithMany()
-                        .HasForeignKey("VehicleDetailsId");
+                        .WithMany("Runsheets")
+                        .HasForeignKey("VehicleDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -4,6 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using VehicleRunsheetMBA.Models;
+using VehicleRunsheetMBAProj.Components.ComponentServices;
+using VehicleRunsheetMBAProj.Data;
 using VehicleRunsheetMBAProj.Data.Repositories;
 using VehicleRunsheetMBAProj.Models;
 using VehicleRunsheetMBAProj.Utilities;
@@ -21,8 +25,10 @@ namespace VehicleRunsheetMBAProj.Pages
         [Inject]
         public IUserInfoProvider UserInfoProvider { get; set; }
 
+        [Inject] public IComponentRefreshService RefreshService { get; set; }
+
         private Runsheet runsheetViewModel = new Runsheet() { InProgress = true };
-        
+
         private Runsheet active = null;
         private IEnumerable<VehicleDetails> vehicles = new List<VehicleDetails>();
         private bool isActiveTrip;
@@ -46,6 +52,17 @@ namespace VehicleRunsheetMBAProj.Pages
         }
 
         protected override async Task OnInitializedAsync()
+        {
+            RefreshService.RefreshRequested += RefreshService_RefreshRequested;
+            await Initialize();
+        }
+
+        private async void RefreshService_RefreshRequested()
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+
+        private async Task Initialize()
         {
             editContext = new EditContext(runsheetViewModel);
 

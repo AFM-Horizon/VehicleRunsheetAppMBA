@@ -22,6 +22,6 @@ namespace VehicleRunsheetMBAProj.Data.Repositories
         public ITripRepository Trips { get; }
         public IRunsheetRepository Runsheets { get; }
         public IOrderRepository Orders { get; }
-        public IVehicleRepository Vehicles { get; set; }
+        public IVehicleRepository Vehicles { get; set; }  
     }
 }

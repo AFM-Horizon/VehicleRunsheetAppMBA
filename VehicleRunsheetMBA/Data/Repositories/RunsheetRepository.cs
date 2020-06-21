@@ -16,11 +16,19 @@ namespace VehicleRunsheetMBAProj.Data.Repositories
 
         public async Task<IEnumerable<Runsheet>> GetAllWithChildren()
         {
-            return await _context.Runsheets
+            List<Runsheet> outList = new List<Runsheet>();
+
+            var list = await _context.Runsheets
                 .Include(x => x.VehicleDetails)
                 .Include(x => x.Trips)
                 .ThenInclude(x => x.Orders)
                 .ToListAsync();
+            foreach (var entity in list)
+            {
+                await _context.Entry(entity).ReloadAsync();
+            }
+
+            return list;
         }
 
         public async Task<Runsheet> GetByIdWithChildren(int id)

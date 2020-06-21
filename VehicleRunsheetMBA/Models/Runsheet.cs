@@ -21,7 +21,6 @@ namespace VehicleRunsheetMBAProj.Models
         [Range(1, int.MaxValue, ErrorMessage = "Please Choose A Vehicle")]
         public int VehicleDetailsId { get; set; }
         public VehicleDetails VehicleDetails { get; set; }
-
         public int StartOdometer { get; set; }
         public int EndOdometer { get; set; }
         public DateTime Date { get; set; }

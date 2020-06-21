@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using VehicleRunsheetMBA.Models;
+using VehicleRunsheetMBAProj.Components.ComponentServices;
 using VehicleRunsheetMBAProj.Data.Repositories;
 using VehicleRunsheetMBAProj.Mappers;
 using VehicleRunsheetMBAProj.Models;
+using VehicleRunsheetMBAProj.Utilities;
 
 namespace VehicleRunsheetMBAProj.Pages
 {
@@ -49,7 +51,7 @@ namespace VehicleRunsheetMBAProj.Pages
             if (activeTrip == null)
             {
                 activeTrip = new Trip() { InProgress = true };
-                tripFormModel.StartTime = DateTime.Now;
+                tripFormModel.StartTime = LocalTimeUtility.GetLocalTime();
                 tripFormModel.InProgress = true;
             }
         }
@@ -59,7 +61,7 @@ namespace VehicleRunsheetMBAProj.Pages
             tripFormModel.Orders.Add(new Order() { OrderNumber = "RETURN" });
             tripFormModel.ReceivedBy = "N/A";
             tripFormModel.Customer = "M.B.A";
-            tripFormModel.EndTime = DateTime.Now;
+            tripFormModel.EndTime = LocalTimeUtility.GetLocalTime();
         }
 
         private async Task UpdateModel()
@@ -87,12 +89,12 @@ namespace VehicleRunsheetMBAProj.Pages
 
         private void HandleStartTime()
         {
-            tripFormModel.StartTime = DateTime.Now;
+            tripFormModel.StartTime = LocalTimeUtility.GetLocalTime();
         }
 
         private void HandleStopTime()
         {
-            tripFormModel.EndTime = DateTime.Now;
+            tripFormModel.EndTime = LocalTimeUtility.GetLocalTime();
         }
 
         private void AddOrder()

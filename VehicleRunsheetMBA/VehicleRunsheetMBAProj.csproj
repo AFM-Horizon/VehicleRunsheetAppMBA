@@ -9,6 +9,7 @@
     <ServiceWorkerForce>true</ServiceWorkerForce>
     <ManifestShortName>MBA Runsheets</ManifestShortName>
     <ManifestLongName>MBA Runsheets App</ManifestLongName>
+    <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
