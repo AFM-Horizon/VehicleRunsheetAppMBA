@@ -12,8 +12,8 @@ namespace VehicleRunsheetMBAProj.Utilities
         public static DateTime ConvertToLocalTime(DateTime utcDateTime)
         {
             Console.WriteLine("Convert To Local Time");
-            //TimeZoneInfo aestZone = TimeZoneInfo.FindSystemTimeZoneById("Australia/Melbourne");
-            TimeZoneInfo aestZone = TimeZoneInfo.FindSystemTimeZoneById("AUS Eastern Standard Time");
+            TimeZoneInfo aestZone = TimeZoneInfo.FindSystemTimeZoneById("Australia/Melbourne");
+            //TimeZoneInfo aestZone = TimeZoneInfo.FindSystemTimeZoneById("AUS Eastern Standard Time");
             Console.WriteLine(aestZone.BaseUtcOffset.ToString());
 
             DateTime aestTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, aestZone);
