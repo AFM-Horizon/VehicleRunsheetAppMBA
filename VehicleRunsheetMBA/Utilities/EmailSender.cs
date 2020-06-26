@@ -7,6 +7,7 @@ using VehicleRunsheetMBAProj.Models;
 
 namespace VehicleRunsheetMBAProj.Utilities
 {
+    //Work In Progress - Alex
     public static class EmailSender
     {
         //public static async Task SendEmail()

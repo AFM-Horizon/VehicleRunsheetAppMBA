@@ -5,49 +5,49 @@
 
 @attribute [Authorize(Roles = "Admin, Manager, User")]
 
-<LoadingComponent Active="@activeTrip">
+<LoadingComponent Active="@_activeTrip">
     <PageToRender>
         <h3>Trip</h3>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-5">
                     <button class="btn btn-info btn-block" @onclick="HandleReturn">Auto-fill Return Trip</button>
-                    <EditForm EditContext="@editContext">
+                    <EditForm EditContext="@_editContext">
                         <FluentValidator TValidator="TripValidator"></FluentValidator>
-                        @if (canShowValidationSummary)
+                        @if (_canShowValidationSummary)
                         {
                             <ValidationSummary />
                         }
                         <div class="my-4">
                             <span class="oi oi-timer text-warning"></span> Start
-                            <strong><input type="time" class="form-control" @bind="@tripFormModel.StartTime" /></strong>
+                            <strong><input type="time" class="form-control" @bind="@_tripFormModel.StartTime" /></strong>
                         </div>
                         <div class="my-4">
 
                             <span class="oi oi-timer text-warning"></span> End
                             <a class="btn btn-sm btn-warning m-1" @onclick="HandleStopTime">Set End</a>
-                            <strong><input type="time" class="form-control" @bind="@tripFormModel.EndTime" /></strong>
+                            <strong><input type="time" class="form-control" @bind="@_tripFormModel.EndTime" /></strong>
                         </div>
                         <div class="my-4">
                             <span class="oi oi-person text-warning"></span> Customer
-                            <InputText class="form-control" @bind-Value="@tripFormModel.Customer" />
-                            @if (canShowValidationSummary)
+                            <InputText class="form-control" @bind-Value="@_tripFormModel.Customer" />
+                            @if (_canShowValidationSummary)
                             {
-                                <ValidationMessage For="() => tripFormModel.Customer"></ValidationMessage>
+                                <ValidationMessage For="() => _tripFormModel.Customer"></ValidationMessage>
                             }
                         </div>
                         <div class="my-4">
                             <span class="oi oi-script text-warning"></span> Order#
                             <button class="btn btn-sm btn-warning mb-1" @onclick="AddOrder">Add Order#</button>
                             <input type="text" class="form-control" @bind="@CurrentOrder" />
-                            <ValidationMessage For="() => tripFormModel.Orders"></ValidationMessage>
+                            <ValidationMessage For="() => _tripFormModel.Orders"></ValidationMessage>
                         </div>
                         <div class="my-4">
                             <span class="oi oi-wrench text-warning"></span> Received By
-                            <InputText class="form-control" @bind-Value="@tripFormModel.ReceivedBy" />
-                            @if (canShowValidationSummary)
+                            <InputText class="form-control" @bind-Value="@_tripFormModel.ReceivedBy" />
+                            @if (_canShowValidationSummary)
                             {
-                                <ValidationMessage For="() => tripFormModel.ReceivedBy"></ValidationMessage>
+                                <ValidationMessage For="() => _tripFormModel.ReceivedBy"></ValidationMessage>
                             }
 
                         </div>
@@ -67,7 +67,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var order in tripFormModel.Orders)
+                            @foreach (var order in _tripFormModel.Orders)
                             {
                                 <tr>
                                     <td>@order.OrderNumber</td>

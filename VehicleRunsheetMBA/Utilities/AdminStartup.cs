@@ -11,8 +11,17 @@ using VehicleRunsheetMBA.Configuration;
 
 namespace VehicleRunsheetMBAProj
 {
+    /// <summary>
+    /// A Class containing logic required to ensure configuration of Admin user, runs at startup.
+    /// </summary>
     public static class AdminStartup
     {
+        /// <summary>
+        /// An <see cref="IServiceCollection"/> extension that encapsulates the logic required to create user roles
+        /// at startup. 
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="provider"></param>
         public static void AddAdmin(this IServiceCollection service, IServiceProvider provider)
         {
             CreateRoles(provider).GetAwaiter().GetResult();

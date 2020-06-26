@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using VehicleRunsheetMBAProj.Data.Repositories;
 using VehicleRunsheetMBAProj.Models;
 using VehicleRunsheetMBAProj.Utilities;
@@ -45,7 +46,7 @@ namespace VehicleRunsheetMBAProj.Pages
 
         protected override async Task OnParametersSetAsync()
         {
-            _users = await UserManager.GetUsersInRoleAsync("User");
+            _users = await UserManager.Users.ToListAsync();
         }
 
         private async Task HandleUserNameChange(ChangeEventArgs e)
@@ -56,7 +57,7 @@ namespace VehicleRunsheetMBAProj.Pages
 
         private async Task HandleDateChange(ChangeEventArgs e)
         {
-            //TODO Needs To Be Try Parse To Stop Exceptions For Bullshit Dates
+            //TODO Needs To Be Try Parse To Stop Exceptions For Invalid Dates
             _date = DateTime.Parse(e.Value.ToString());
             await GetRunsheet();
         }

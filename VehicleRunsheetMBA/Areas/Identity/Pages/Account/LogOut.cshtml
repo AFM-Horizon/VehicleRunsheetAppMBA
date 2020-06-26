@@ -4,7 +4,7 @@
 @inject SignInManager<IdentityUser> SignInManager
 @functions {
     
-
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> OnPost()
     {
         if (SignInManager.IsSignedIn(User))

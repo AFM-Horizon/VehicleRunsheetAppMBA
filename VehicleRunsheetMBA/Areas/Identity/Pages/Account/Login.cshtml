@@ -11,7 +11,11 @@
         <section>
             <form id="account" method="post">
                 <h4>Use a local account to log in.</h4>
-                <hr />
+                <div>
+                    <hr />
+                    <a class="btn btn-info" href="/">&#8592 Return Home</a>
+                    <hr />
+                </div>
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Input.Email"></label>
@@ -24,7 +28,7 @@
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <div class="checkbox">
+                    <div class="custom-checkbox">
                         <label asp-for="Input.RememberMe">
                             <input asp-for="Input.RememberMe" />
                             @Html.DisplayNameFor(m => m.Input.RememberMe)

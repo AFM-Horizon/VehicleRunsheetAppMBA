@@ -28,101 +28,101 @@ namespace VehicleRunsheetMBAProj.Pages
 
         private int _id;
         private List<Order> orders;
-        private Trip tripFormModel = new Trip();
-        private Trip activeTrip = null;
-        private Runsheet runsheet;
-        private EditContext editContext;
-        private bool canShowValidationSummary = false;
+        private Trip _tripFormModel = new Trip();
+        private Trip _activeTrip = null;
+        private Runsheet _runsheet;
+        private EditContext _editContext;
+        private bool _canShowValidationSummary = false;
 
         protected override async Task OnParametersSetAsync()
         {
-            editContext = new EditContext(tripFormModel);
+            _editContext = new EditContext(_tripFormModel);
 
             var result = int.TryParse(RunsheetId, out _id);
-            runsheet = await Unit.Runsheets.GetByIdAsync(_id);
+            _runsheet = await Unit.Runsheets.GetByIdAsync(_id);
 
-            activeTrip = await Unit.Trips.GetTripWithChildrenByRunsheetId(_id);
+            _activeTrip = await Unit.Trips.GetTripWithChildrenByRunsheetId(_id);
 
-            if (activeTrip != null)
+            if (_activeTrip != null)
             {
-                tripFormModel = TripMapper.MapTrip(activeTrip, tripFormModel);
+                _tripFormModel = TripMapper.MapTrip(_activeTrip, _tripFormModel);
             }
 
-            if (activeTrip == null)
+            if (_activeTrip == null)
             {
-                activeTrip = new Trip() { InProgress = true };
-                tripFormModel.StartTime = LocalTimeUtility.GetLocalTime();
-                tripFormModel.InProgress = true;
+                _activeTrip = new Trip() { InProgress = true };
+                _tripFormModel.StartTime = LocalTimeUtility.GetLocalTime();
+                _tripFormModel.InProgress = true;
             }
         }
 
         private async Task HandleReturn()
         {
-            tripFormModel.Orders.Add(new Order() { OrderNumber = "RETURN" });
-            tripFormModel.ReceivedBy = "N/A";
-            tripFormModel.Customer = "M.B.A";
-            tripFormModel.EndTime = LocalTimeUtility.GetLocalTime();
+            _tripFormModel.Orders.Add(new Order() { OrderNumber = "RETURN" });
+            _tripFormModel.ReceivedBy = "N/A";
+            _tripFormModel.Customer = "M.B.A";
+            _tripFormModel.EndTime = LocalTimeUtility.GetLocalTime();
         }
 
         private async Task UpdateModel()
         {
-            activeTrip = TripMapper.MapTrip(tripFormModel, activeTrip);
-            runsheet = await Unit.Runsheets.GetByIdAsync(_id);
+            _activeTrip = TripMapper.MapTrip(_tripFormModel, _activeTrip);
+            _runsheet = await Unit.Runsheets.GetByIdAsync(_id);
 
-            if (activeTrip.Id == 0)
+            if (_activeTrip.Id == 0)
             {
-                runsheet.Trips.Add(activeTrip);
-                await Unit.Runsheets.UpdateAsync(runsheet);
+                _runsheet.Trips.Add(_activeTrip);
+                await Unit.Runsheets.UpdateAsync(_runsheet);
             }
             else
             {
-                await Unit.Trips.UpdateAsync(activeTrip);
+                await Unit.Trips.UpdateAsync(_activeTrip);
             }
         }
 
         private async Task HandleUpdate()
         {
-            editContext.MarkAsUnmodified();
+            _editContext.MarkAsUnmodified();
             await UpdateModel();
             NavigationManager.NavigateTo("/");
         }
 
         private void HandleStartTime()
         {
-            tripFormModel.StartTime = LocalTimeUtility.GetLocalTime();
+            _tripFormModel.StartTime = LocalTimeUtility.GetLocalTime();
         }
 
         private void HandleStopTime()
         {
-            tripFormModel.EndTime = LocalTimeUtility.GetLocalTime();
+            _tripFormModel.EndTime = LocalTimeUtility.GetLocalTime();
         }
 
         private void AddOrder()
         {
 
-            tripFormModel.Orders.Add(new Order() { OrderNumber = CurrentOrder });
+            _tripFormModel.Orders.Add(new Order() { OrderNumber = CurrentOrder });
             CurrentOrder = "";
 
         }
 
         private void HandleDeleteOrder(string orderNumber)
         {
-            var order = tripFormModel.Orders.Find(x => x.OrderNumber == orderNumber);
-            tripFormModel.Orders.Remove(order);
+            var order = _tripFormModel.Orders.Find(x => x.OrderNumber == orderNumber);
+            _tripFormModel.Orders.Remove(order);
         }
 
         private async Task HandleFinalize()
         {
-            if (!editContext.Validate())
+            if (!_editContext.Validate())
             {
-                canShowValidationSummary = true;
+                _canShowValidationSummary = true;
             }
-            if (editContext.Validate())
+            if (_editContext.Validate())
             {
-                canShowValidationSummary = false;
+                _canShowValidationSummary = false;
                 await UpdateModel();
-                activeTrip.InProgress = false;
-                await Unit.Trips.UpdateAsync(activeTrip);
+                _activeTrip.InProgress = false;
+                await Unit.Trips.UpdateAsync(_activeTrip);
                 NavigationManager.NavigateTo("/");
             }
         }

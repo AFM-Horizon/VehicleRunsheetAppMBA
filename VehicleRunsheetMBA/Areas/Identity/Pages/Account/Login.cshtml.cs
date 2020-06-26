@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace VehicleRunsheetMBAProj.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
+    [IgnoreAntiforgeryToken]
     public class LoginModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;

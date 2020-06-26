@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using VehicleRunsheetMBAProj.Models;
 
 namespace VehicleRunsheetMBAProj.Utilities
 {
     public static class VehicleEnumToIconConverter
     {
+        /// <summary>
+        /// A class that returns a particular Font Awesome icon based on a <see cref="VehicleEnums"/> type.  
+        /// </summary>
+        /// <param name="vehicleType"></param>
+        /// <returns></returns>
         public static string GetEnumIcon(VehicleEnums.VehicleType vehicleType)
         {
             switch (vehicleType)
