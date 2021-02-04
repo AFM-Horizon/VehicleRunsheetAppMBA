@@ -1,13 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using VehicleRunsheetMBA.Configuration;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace VehicleRunsheetMBAProj
 {
@@ -32,12 +27,13 @@ namespace VehicleRunsheetMBAProj
             const string Admin = "Admin";
             const string Manager = "Manager";
             const string AppUser = "User";
+            
 
             string[] _roleNames = { Admin, Manager, AppUser };
 
             var _roleManager = service.GetRequiredService<RoleManager<IdentityRole>>();
             var _userManager = service.GetRequiredService<UserManager<IdentityUser>>();
-            var _settings = service.GetRequiredService<Settings>();
+            //var _settings = service.GetRequiredService<Settings>();
 
             foreach (var role in _roleNames)
             {
@@ -49,22 +45,22 @@ namespace VehicleRunsheetMBAProj
                 }
             }
 
-            var user = await _userManager.FindByEmailAsync(_settings.AdminEmail);
+            var user = await _userManager.FindByEmailAsync("test@test.com");
 
             if (user == null)
             {
                 var admin = new IdentityUser()
                 {
                     UserName = Admin,
-                    Email = _settings.AdminEmail
+                    Email = "test@test.com"
                 };
 
-                string adminPassword = _settings.AdminPassword;
+                string adminPassword = "Admin_1234";
                 var createUser = await _userManager.CreateAsync(admin, adminPassword);
 
                 if (createUser.Succeeded)
                 {
-                    var createdUser = await _userManager.FindByEmailAsync(_settings.AdminEmail);
+                    var createdUser = await _userManager.FindByEmailAsync("test@test.com");
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(createdUser);
                     var result = await _userManager.ConfirmEmailAsync(createdUser, code);
                     if (!result.Succeeded)

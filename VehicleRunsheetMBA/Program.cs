@@ -16,8 +16,7 @@ namespace VehicleRunsheetMBA
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseStartup<Startup>()
-                        .UseSetting(WebHostDefaults.DetailedErrorsKey, "true");
+                        .UseStartup<Startup>();
                 });
     }
 }

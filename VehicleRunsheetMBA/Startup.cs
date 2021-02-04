@@ -47,7 +47,7 @@ namespace VehicleRunsheetMBAProj
                 {
                     options.ServerStickyMode = ServerStickyMode.Required;
                     options.ConnectionString =
-                        "Endpoint=https://mbasignalr.service.signalr.net;AccessKey=wJqgPGyuBwgLrtB/ezVqhY4ZimqtlOZTR/+egnlEcHk=;Version=1.0;";
+                        "Endpoint=https://mba-signalr.service.signalr.net;AccessKey=sUK4ZRjTbH26FJfAdVTfBLirJpnGauA7fxEVapzkr1E=;Version=1.0;";
                 });
 
             services.AddRazorPages();
@@ -72,10 +72,10 @@ namespace VehicleRunsheetMBAProj
             {
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                //app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
